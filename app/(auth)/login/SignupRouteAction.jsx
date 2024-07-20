@@ -11,7 +11,7 @@ export default function Action() {
     <>
     <button
            onClick={opensignup}
-            className="bg-transparent rounded-full  hover:bg-white hover:text-blue-700 hover:font-semibold hover:animate-bounce   p-3 px-10 border-2 flex justify-center items-center
+            className="bg-transparent rounded-full  hover:bg-white hover:text-blue-700 hover:font-semibold animate-bounce hover:animate-pulse   p-3 px-10 border-2 flex justify-center items-center
                     text-white mt-3 border-white"
           >
             Sign Up
