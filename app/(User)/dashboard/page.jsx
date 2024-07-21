@@ -1,9 +1,9 @@
-import React from 'react'
 
+import Navbar from "../../../components/navbar";
 export default function page() {
   return (
-    <div>
-      This is dashboard Page
-    </div>
+    <>
+      <Navbar />
+    </>
   )
 }
