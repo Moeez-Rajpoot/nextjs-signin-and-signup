@@ -1,9 +1,19 @@
+"use client";
 import ChangeImage from "../../../public/img4.png";
 import ActionBtn from "../signup/SignupRouteAction";
 import PageLayout from "../Commonlayout";
 import Form from "./form";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function changepassword() {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!localStorage.getItem("reset")) {
+      router.push('/forgetpassword');
+    }
+  }, [router]);
   return (
     <div>
       <PageLayout

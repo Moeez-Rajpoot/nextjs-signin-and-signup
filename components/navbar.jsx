@@ -2,14 +2,18 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AcmeLogo } from "./logo";
 import UserImage from "../public/user2.jpg";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -30,6 +34,18 @@ const Navbar = () => {
   const handleLinkClick = () => {
     setIsOpen(false);
     setIsUserMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("useremail");
+    router.push("/login");
+  };
+
+  const getLinkClass = (path) => {
+    return pathname === path
+      ? "flex py-3 sm:px-4 text-slate-900 items-center sm:mt-0 justify-center sm:mb-7 mt-2 md:mb-0 md:mr-5 bg-slate-300 rounded-sm"
+      : "flex py-3 sm:px-4 text-white items-center sm:mt-0 justify-center sm:mb-7 mt-2 md:mb-0 md:mr-5 hover:bg-slate-400 hover:rounded-sm hover:animate-pulse";
   };
 
   return (
@@ -55,17 +71,17 @@ const Navbar = () => {
             style={{ zIndex: 9 }}
           >
             <ul className="flex flex-col md:flex-row list-none w-full md:w-auto">
-              <li className="flex py-3 sm:px-4 text-white items-center sm:mt-0 justify-center sm:mb-7 mt-2 md:mb-0 md:mr-5 hover:bg-slate-400 hover:rounded-sm hover:animate-pulse">
+              <li className={getLinkClass("/dashboard/users")}>
                 <Link href="/dashboard/users" onClick={handleLinkClick}>
                   Users <i className="fa-solid fa-users"></i>
                 </Link>
               </li>
-              <li className="flex py-3 sm:px-4 items-center mt-2 sm:mt-0 text-white justify-center sm:mb-7 md:mb-0 md:mr-5 hover:bg-slate-400 hover:rounded-sm hover:animate-pulse">
+              <li className={getLinkClass("/dashboard/addcourse")}>
                 <Link href="/dashboard/addcourse" onClick={handleLinkClick}>
                   Add Course <i className="fa-solid fa-plus"></i>
                 </Link>
               </li>
-              <li className="flex py-3 sm:px-4 justify-center items-center sm:mt-0 text-white sm:mb-7 mt-2 md:mb-0 md:mr-5 hover:bg-slate-400 hover:rounded-sm hover:animate-pulse">
+              <li className={getLinkClass("/dashboard/courses")}>
                 <Link href="/dashboard/courses" onClick={handleLinkClick}>
                   Courses <i className="fa-brands fa-discourse"></i>
                 </Link>
@@ -89,12 +105,14 @@ const Navbar = () => {
                     >
                       Profile
                     </Link>
-                    <a
+
+                    <Link
+                      href="/login"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                      onClick={handleLinkClick}
+                      onClick={handleLogout}
                     >
                       Log Out
-                    </a>
+                    </Link>
                   </div>
                 )}
               </div>

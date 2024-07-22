@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ForgetPassAction from "./FormForgetAction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,6 +10,12 @@ function LoginForm() {
   const notify = () => toast.success("Login Successful");
   const notifyError = () => toast.error("Invalid email or password");
   const Router = useRouter();
+
+  useEffect(() => {
+    if (localStorage.getItem("isLoggedIn")) {
+      Router.push('/dashboard/users');
+    }
+  }, []);
 
   
   const handleLogin = (e) => {
@@ -24,7 +30,11 @@ function LoginForm() {
     );
 
     if (credentialMatch) {
+      // Inside the handleLogin function after successful authentication
+      localStorage.setItem("useremail",  email);
+      localStorage.setItem("isLoggedIn", "true");
       notify();
+
       // console.log("Credenitails  are " + JSON.stringify(credentialMatch));
       // dispatch(setUserData(credentialMatch));
       // // setUserData(credentialMatch);
@@ -32,7 +42,9 @@ function LoginForm() {
       // dispatch(LoginState());
 
       
-      Router.push('/dashboard/users');
+      setTimeout(() => {
+        Router.push('/dashboard/users');
+      }, 1000);
     } else {
       notifyError();
     }
