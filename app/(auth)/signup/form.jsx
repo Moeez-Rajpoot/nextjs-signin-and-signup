@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from 'next/navigation';
 
 const validateUsername = (username) => {
   if (username.trim().length === 0) {
@@ -52,6 +53,7 @@ function SignupForm() {
   const [showError, setShowError] = useState(false);
   const [errorno, setErrorNo] = useState("");
   const [msgcolor, setMsgColor] = useState("1");
+  const Router = useRouter();
 
   const notify = () => toast.success("User Registered Successfully");
 
@@ -73,7 +75,7 @@ function SignupForm() {
     };
 
     notify();
-    console.log(credentials);
+    
 
     let existingCredentials =
       JSON.parse(localStorage.getItem("signupCredentials")) || [];
@@ -94,6 +96,8 @@ function SignupForm() {
     setErrorMessage("");
     setShowError(false);
     setErrorNo("");
+
+    Router.push("/login");
   };
 
   const validateFields = () => {
