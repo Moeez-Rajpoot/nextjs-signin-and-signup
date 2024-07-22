@@ -97,7 +97,9 @@ function SignupForm() {
     setShowError(false);
     setErrorNo("");
 
-    Router.push("/login");
+    setTimeout(() => {
+      Router.push("/login");
+    },1000);
   };
 
   const validateFields = () => {

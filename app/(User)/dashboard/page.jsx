@@ -3,15 +3,17 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '../../../utils/auth'; // Adjust the path as necessary
 import Navbar from "../../../components/navbar";
+import { useAppSelector } from '@/lib/hook';
 
 export default function Page() {
   const router = useRouter();
+  const State = useAppSelector((state) => state.auth.isLoggedIn);
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+    if (!State) {
       router.push('/login');
     }
-  }, [router]);
+  }, [State]);
 
   return (
     <>

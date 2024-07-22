@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from "../../../../components/navbar";
-
+import { useAppSelector } from "@/lib/hook";
 
 const Profile = () => {
   const router = useRouter();
@@ -15,27 +15,32 @@ const Profile = () => {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [password, setPassword] = useState("");
   const [gender, setGender] = useState("Male");
-
+  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
+  const userData = useAppSelector((state) => state.UserData.userData);
  
+  useEffect(() => {
+    if(!isLoggedIn) {
+      router.push('/login');
+    }
+  }, [isLoggedIn, router]);
 
   useEffect(() => {
-    const userEmail = localStorage.getItem("useremail");
-    if (userEmail) {
-      setEmail(userEmail);
+    if (userData) {
+      setEmail(userData);
       const credentialsArray = JSON.parse(localStorage.getItem("signupCredentials")) || [];
-      const userData = credentialsArray.find((cred) => cred.email === userEmail);
-      if (userData) {
-        setUsername(userData.username || "");
-        setPhone(userData.phone || "");
-        setCnic(userData.cnic || "");
-        setPassword(userData.password || "");
-        setDateOfBirth(userData.dateOfBirth || "");
-        setGender(userData.gender || "Male");
+      const userProfileData = credentialsArray.find((cred) => cred.email === userData);
+      if (userProfileData) {
+        setUsername(userProfileData.username || "");
+        setPhone(userProfileData.phone || "");
+        setCnic(userProfileData.cnic || "");
+        setPassword(userProfileData.password || "");
+        setDateOfBirth(userProfileData.dateOfBirth || "");
+        setGender(userProfileData.gender || "Male");
       }
     } else {
       router.push("/login");
     }
-  }, [router]);
+  }, [userData, router]);
 
   const validateFields = () => {
     let isValid = true;
@@ -48,7 +53,7 @@ const Profile = () => {
       isValid = false;
     }
 
-    let phoneRegex = /^\+923\d{9}$/;
+    const phoneRegex = /^\+923\d{9}$/;
     if (phone.length === 0) {
       toast.error("Phone number cannot be empty.");
       isValid = false;
@@ -72,7 +77,6 @@ const Profile = () => {
       toast.error("Password must be at least 8 characters long.");
       isValid = false;
     }
-    
 
     return isValid;
   };
@@ -112,7 +116,6 @@ const Profile = () => {
   return (
     <>
       <Navbar />
-    
       <div className="mt-10 sm:mt-5 flex flex-col items-center justify-center min-h-screen bg-gray-100">
         <div className="bg-white -mt-20 p-8 rounded-lg shadow-lg w-full max-w-4xl">
           <h1 className="text-2xl font-roboto font-bold mb-6 text-gray-900 text-center">Profile</h1>
@@ -156,17 +159,17 @@ const Profile = () => {
           </form>
         </div>
         <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </>
   );

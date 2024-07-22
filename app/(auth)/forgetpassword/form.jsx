@@ -34,6 +34,8 @@ function ForgetPasswordForm() {
 
       localStorage.setItem("reset", true);
       localStorage.setItem("resetUsername", username);
+
+      
     } else {
       toast.error("Invalid credentials");
 

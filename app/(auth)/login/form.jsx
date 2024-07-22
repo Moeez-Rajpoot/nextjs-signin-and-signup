@@ -4,18 +4,24 @@ import ForgetPassAction from "./FormForgetAction";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from 'next/navigation';
+import { setUserData } from "@/lib/features/auth/userSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hook";
+import { login } from "@/lib/features/auth/authSlice";
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const notify = () => toast.success("Login Successful");
   const notifyError = () => toast.error("Invalid email or password");
   const Router = useRouter();
+  const dispatch = useAppDispatch();
+  const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn); 
 
   useEffect(() => {
-    if (localStorage.getItem("isLoggedIn")) {
+    if (isLoggedIn) {
       Router.push('/dashboard/users');
     }
-  }, []);
+  }, [isLoggedIn, Router]); 
+
 
   
   const handleLogin = (e) => {
@@ -30,9 +36,11 @@ function LoginForm() {
     );
 
     if (credentialMatch) {
-      // Inside the handleLogin function after successful authentication
-      localStorage.setItem("useremail",  email);
-      localStorage.setItem("isLoggedIn", "true");
+      // // Inside the handleLogin function after successful authentication
+      // localStorage.setItem("useremail",  email);
+      // localStorage.setItem("isLoggedIn", "true");
+      dispatch(setUserData(email));
+      dispatch(login());
       notify();
 
     

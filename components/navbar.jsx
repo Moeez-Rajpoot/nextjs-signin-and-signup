@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { AcmeLogo } from "./logo";
 import UserImage from "../public/user2.jpg";
 import { usePathname } from "next/navigation";
+import { useAppDispatch } from "@/lib/hook";
+import { logout } from "@/lib/features/auth/authSlice";
+import { clearUserData } from "@/lib/features/auth/userSlice";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +17,8 @@ const Navbar = () => {
   const mobileMenuRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -37,9 +42,11 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("useremail");
-    router.push("/login");
+    // localStorage.removeItem("isLoggedIn");
+    dispatch(logout());
+    dispatch(clearUserData());
+    // localStorage.removeItem("useremail");
+    // router.push("/login");
   };
 
   const getLinkClass = (path) => {

@@ -27,8 +27,8 @@ function ForgetPasswordForm() {
     const credentialMatch = credentialsArray.find(
       (cred) => cred.username === localStorage.getItem("resetUsername")
     );
-    if (password.length < 8) {
-      toast.error("Password must be atleast 8 characters long");
+    if (password.length <= 8) {
+      toast.error("Password must be atleast 9 characters long");
       return;
     }
     if (password === reTypePassword) {

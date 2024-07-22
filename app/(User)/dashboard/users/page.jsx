@@ -3,16 +3,19 @@ import Navbar from '@/components/navbar';
 import React, { useState, useEffect } from 'react';
 import { isAuthenticated } from '@/utils/auth';
 import { useRouter } from 'next/navigation';
+import { useAppSelector } from '@/lib/hook';
 
 export default function Users() {
   const [users, setUsers] = useState([]);
+  const userState = useAppSelector((state) => state.auth.isLoggedIn);
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated()) {
+
+    if (!userState) {
       router.push('/login');
     }
-  }, [router]);
+  }, [userState]);
 
   useEffect(() => {
     // Retrieve users from local storage
