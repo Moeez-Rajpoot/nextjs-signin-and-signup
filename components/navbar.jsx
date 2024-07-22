@@ -78,18 +78,18 @@ const Navbar = () => {
             style={{ zIndex: 9 }}
           >
             <ul className="flex flex-col md:flex-row list-none w-full md:w-auto">
-              <li className={getLinkClass("/dashboard/users")}>
-                <Link href="/dashboard/users" onClick={handleLinkClick}>
+              <li >
+                <Link className={getLinkClass("/dashboard/users")} href="/dashboard/users" onClick={handleLinkClick}>
                   Users <i className="fa-solid fa-users"></i>
                 </Link>
               </li>
-              <li className={getLinkClass("/dashboard/addcourse")}>
-                <Link href="/dashboard/addcourse" onClick={handleLinkClick}>
+              <li >
+                <Link className={getLinkClass("/dashboard/addcourse")} href="/dashboard/addcourse" onClick={handleLinkClick}>
                   Add Course <i className="fa-solid fa-plus"></i>
                 </Link>
               </li>
-              <li className={getLinkClass("/dashboard/courses")}>
-                <Link href="/dashboard/courses" onClick={handleLinkClick}>
+              <li >
+                <Link className={getLinkClass("/dashboard/courses")} href="/dashboard/courses" onClick={handleLinkClick}>
                   Courses <i className="fa-brands fa-discourse"></i>
                 </Link>
               </li>

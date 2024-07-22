@@ -116,7 +116,7 @@ const Profile = () => {
   return (
     <>
       <Navbar />
-      <div className="mt-10 sm:mt-5 flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="mt-36 sm:mt-5 flex flex-col items-center justify-center min-h-screen bg-gray-100">
         <div className="bg-white -mt-20 p-8 rounded-lg shadow-lg w-full max-w-4xl">
           <h1 className="text-2xl font-roboto font-bold mb-6 text-gray-900 text-center">Profile</h1>
           <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-6">
