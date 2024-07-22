@@ -13,17 +13,10 @@ const Profile = () => {
   const [phone, setPhone] = useState("");
   const [cnic, setCnic] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
+  const [password, setPassword] = useState("");
   const [gender, setGender] = useState("Male");
 
-  useEffect(() => {
-    const isAuthenticated = () => {
-      return !!localStorage.getItem("useremail");
-    };
-
-    if (!isAuthenticated()) {
-      router.push('/login');
-    }
-  }, [router]);
+ 
 
   useEffect(() => {
     const userEmail = localStorage.getItem("useremail");
@@ -35,6 +28,7 @@ const Profile = () => {
         setUsername(userData.username || "");
         setPhone(userData.phone || "");
         setCnic(userData.cnic || "");
+        setPassword(userData.password || "");
         setDateOfBirth(userData.dateOfBirth || "");
         setGender(userData.gender || "Male");
       }
@@ -71,6 +65,15 @@ const Profile = () => {
       isValid = false;
     }
 
+    if(password.length === 0) {
+      toast.error("Password cannot be empty.");
+      isValid = false;
+    } else if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
+      isValid = false;
+    }
+    
+
     return isValid;
   };
 
@@ -86,6 +89,7 @@ const Profile = () => {
       email,
       phone,
       cnic,
+      password,
       dateOfBirth,
       gender,
     };
@@ -96,6 +100,7 @@ const Profile = () => {
       credentialMatch.username = updatedUser.username;
       credentialMatch.phone = updatedUser.phone;
       credentialMatch.cnic = updatedUser.cnic;
+      credentialMatch.password = updatedUser.password;
       credentialMatch.dateOfBirth = updatedUser.dateOfBirth;
       credentialMatch.gender = updatedUser.gender;
       localStorage.setItem("signupCredentials", JSON.stringify(credentialsArray));
@@ -138,6 +143,10 @@ const Profile = () => {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
+            </div>
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">Password</label>
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
             </div>
             <div className="md:col-span-2">
               <button type="submit" className="w-full py-2 px-4 bg-blue-600 text-white font-bold rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring focus:border-blue-300">

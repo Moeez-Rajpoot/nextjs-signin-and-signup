@@ -4,7 +4,6 @@ import React from "react"
 export default function Action() {
     const router = useRouter();
     const opensignup = () => {
-      console.log("This is the signup page");
         router.push("/signup");
     }
   return (

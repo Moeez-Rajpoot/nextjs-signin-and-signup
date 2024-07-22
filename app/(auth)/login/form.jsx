@@ -35,11 +35,7 @@ function LoginForm() {
       localStorage.setItem("isLoggedIn", "true");
       notify();
 
-      // console.log("Credenitails  are " + JSON.stringify(credentialMatch));
-      // dispatch(setUserData(credentialMatch));
-      // // setUserData(credentialMatch);
-      // // onChangeUser(true);  //Use Context Api
-      // dispatch(LoginState());
+    
 
       
       setTimeout(() => {

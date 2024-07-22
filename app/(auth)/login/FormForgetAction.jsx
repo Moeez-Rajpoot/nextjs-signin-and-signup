@@ -4,7 +4,6 @@ const ForgetPassAction = () => {
   const router = useRouter();
 
   const forgetPass = () => {
-    console.log("This is the forget password page");
     router.push("/forgetpassword");
   };
 

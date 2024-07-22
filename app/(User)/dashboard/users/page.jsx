@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { isAuthenticated } from '@/utils/auth';
 import { useRouter } from 'next/navigation';
 
-
 export default function Users() {
   const [users, setUsers] = useState([]);
   const router = useRouter();

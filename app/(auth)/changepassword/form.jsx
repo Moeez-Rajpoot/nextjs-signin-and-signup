@@ -48,6 +48,7 @@ function ForgetPasswordForm() {
 
     }
   };
+  
   return (
     <form onSubmit={handlePasswordChange} className="flex flex-col mt-5 w-full px-5 lg:px-32">
 
