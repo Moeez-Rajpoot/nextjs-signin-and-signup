@@ -85,7 +85,7 @@ const Profile = () => {
     e.preventDefault();
 
     if (!validateFields()) {
-      return; // Prevent submission if fields are not valid
+      return; 
     }
 
     const updatedUser = {

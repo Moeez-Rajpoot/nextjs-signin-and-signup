@@ -18,7 +18,7 @@ export default function Users() {
   }, [userState]);
 
   useEffect(() => {
-    // Retrieve users from local storage
+    
     const storedUsers = JSON.parse(localStorage.getItem('signupCredentials')) || [];
     setUsers(storedUsers);
   }, []);
