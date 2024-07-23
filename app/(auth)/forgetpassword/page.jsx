@@ -3,7 +3,7 @@ import ActionBtn from "../signup/SignupRouteAction";
 import PageLayout from "../Commonlayout";
 import Form from "./form";
 
-export default function forgetpassword() {
+export default function ForgetPassword() {
   return (
     <div>
       <PageLayout

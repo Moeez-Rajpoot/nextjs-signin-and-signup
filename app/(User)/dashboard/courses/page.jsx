@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 // import { isAuthenticated } from '@/utils/auth';
 import { useAppSelector } from '@/lib/hook';
 
-export default function page() {
+export default function Page() {
 
   const router = useRouter();
   const State = useAppSelector((state) => state.auth.isLoggedIn);

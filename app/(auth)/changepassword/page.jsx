@@ -6,7 +6,7 @@ import Form from "./form";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function changepassword() {
+export default function ChangePassword() {
   const router = useRouter();
 
   useEffect(() => {
