@@ -2,7 +2,7 @@
 
 ## Live Site
 
-Check out the live site [here](https://vercel.com/moeez-rajpoots-projects/signin-and-signup ).
+Check out the live site [here](https://vercel.com/moeez-rajpoots-projects/signin-and-signup )
 
 ![Image1](https://github.com/Moeez-Rajpoot/nextjs-signin-and-signup/blob/main/images/image1.png)
 ![Image2](https://github.com/Moeez-Rajpoot/nextjs-signin-and-signup/blob/main/images/image2.png)
