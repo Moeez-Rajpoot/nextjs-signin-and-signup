@@ -1,23 +1,35 @@
 "use client";
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-// import { isAuthenticated } from '@/utils/auth';
 import { useAppSelector } from '@/lib/hook';
+import Navbar from '@/components/navbar';
 
 export default function Page() {
-
   const router = useRouter();
   const State = useAppSelector((state) => state.auth.isLoggedIn);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     if (!State) {
       router.push('/login');
     }
-  }, [State]);
+  }, [State, router]);
+
+  useEffect(() => {
+    const userdp = localStorage.getItem('Userdp');
+    if (userdp) {
+      // Remove any extra quotes from the URL
+      const cleanedUserdp = userdp.replace(/^"|"$/g, '');
+      setImage(cleanedUserdp);
+    }
+  }, []);
+
   return (
-    <div>
-      This is All Courses Page
-    </div>
-  )
+    <>
+      <Navbar Profile={image} />
+      <div>
+        This is All Courses Page
+      </div>
+    </>
+  );
 }

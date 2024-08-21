@@ -10,7 +10,7 @@ import { useAppDispatch } from "@/lib/hook";
 import { logout } from "@/lib/features/auth/authSlice";
 import { clearUserData } from "@/lib/features/auth/userSlice";
 
-const Navbar = () => {
+const Navbar = ({Profile}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
@@ -95,7 +95,9 @@ const Navbar = () => {
               </li>
               <div className="relative flex items-center sm:mt-2 sm:mr-8 justify-center mt-3 mb-2">
                 <Image
-                  src={UserImage}
+                  src={Profile ? Profile : UserImage}
+                  width={36}
+                  height={36}
                   alt="User"
                   className="h-9 w-9 rounded-full cursor-pointer"
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}

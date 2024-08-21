@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const validateUsername = (username) => {
   if (username.trim().length === 0) {
@@ -53,53 +54,73 @@ function SignupForm() {
   const [showError, setShowError] = useState(false);
   const [errorno, setErrorNo] = useState("");
   const [msgcolor, setMsgColor] = useState("1");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const Router = useRouter();
 
   const notify = () => toast.success("User Registered Successfully");
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
 
     if (!validateFields()) {
+      setIsLoading(false);
       return;
     }
 
-    const credentials = {
-      username,
-      password,
-      email,
-      phone,
-      cnic,
-      dateOfBirth,
-      gender,
-    };
+    const formData = new FormData();
+    formData.append("Username", username);
+    formData.append("Password", password);
+    formData.append("Email", email);
+    formData.append("Phone", phone);
+    formData.append("Cnic", cnic);
+    formData.append("Dob", dateOfBirth);
+    formData.append("Gender", gender);
 
-    notify();
-    
+    if (selectedFile) {
+      formData.append("image", selectedFile, selectedFile.name);
+    }
 
-    let existingCredentials =
-      JSON.parse(localStorage.getItem("signupCredentials")) || [];
-    existingCredentials.push(credentials);
-    localStorage.setItem(
-      "signupCredentials",
-      JSON.stringify(existingCredentials)
-    );
+    try {
+      const response = await fetch("http://127.0.0.1:3000/api/user/register", {
+        method: "POST",
+        body: formData,
+      });
 
-    setUsername("");
-    setPassword("");
-    setEmail("");
-    setPhone("");
-    setCnic("");
-    setDateOfBirth("");
-    setGender("");
+      if (!response.ok) {
+        setIsLoading(false);
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Network response was not ok");
+      }
 
-    setErrorMessage("");
-    setShowError(false);
-    setErrorNo("");
+      const data = await response.json();
+      console.log("Success:", data);
 
-    setTimeout(() => {
-      Router.push("/login");
-    },1000);
+      setUsername("");
+      setSelectedFile(null);
+      setPassword("");
+      setEmail("");
+      setPhone("");
+      setCnic("");
+      setDateOfBirth("");
+      setGender("");
+      setErrorMessage("");
+      setShowError(false);
+      setErrorNo("");
+      setSelectedFile(null);
+      setIsLoading(false);
+
+      notify();
+    } catch (error) {
+      setIsLoading(false);
+      console.error("Error:", error);
+      toast.error(error.message);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
   };
 
   const validateFields = () => {
@@ -217,6 +238,25 @@ function SignupForm() {
       className="flex flex-col mt-5 w-full px-5 lg:px-32"
       onSubmit={handleSubmit}
     >
+      <div className="flex w-full">
+        <input
+          type="file"
+          onChange={handleFileChange}
+          className="outline-none p-3 w-full bg-transparent border-b-2 border-white text-white"
+          accept="image/*"
+        />
+        {selectedFile && (
+          <div className="mt-2">
+            <Image
+              src={URL.createObjectURL(selectedFile)}
+              alt="Selected Preview"
+              width={50} // Specify the width
+              height={50} // Specify the height
+              className="object-cover rounded-full"
+            />
+          </div>
+        )}
+      </div>
       <input
         type="text"
         placeholder="Full Name"
@@ -326,9 +366,32 @@ function SignupForm() {
         type="submit"
         className="mb-10 sm:mb-0 bg-transparent rounded-full hover:bg-white hover:text-blue-700 hover:font-semibold p-3 px-10 border-2 flex justify-center items-center hover:animate-pulse text-white mt-10 border-white"
       >
-        Sign Up
+        {isLoading ? (
+          <svg
+            className="animate-spin h-5 w-5 mr-3 text-blue-700"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        ) : (
+          "Sign Up"
+        )}
       </button>
-      
+
       <ToastContainer
         position="bottom-right"
         autoClose={5000}
