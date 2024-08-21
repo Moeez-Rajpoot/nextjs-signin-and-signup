@@ -55,6 +55,7 @@ function LoginForm() {
         dispatch(setUserData(data.accesstoken));
         dispatch(login());
 
+
         localStorage.setItem("accessToken", data.accessToken);
 
         notify();

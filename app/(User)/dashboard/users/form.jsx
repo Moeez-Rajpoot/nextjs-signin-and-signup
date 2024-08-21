@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
-const ProfileForm = ({ accesstoken, currentUserData , drop , setDropbox }) => {
+const ProfileForm = ({ accesstoken, currentUserData, drop, setDropbox }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -56,11 +56,11 @@ const ProfileForm = ({ accesstoken, currentUserData , drop , setDropbox }) => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-  
+
     if (!validateFields()) {
       return; // Prevent submission if fields are not valid
     }
-  
+
     const updatedUser = {
       id: currentUserData._id,
       username,
@@ -71,7 +71,8 @@ const ProfileForm = ({ accesstoken, currentUserData , drop , setDropbox }) => {
       gender,
     };
 
-  
+    console.log("Updated User Data:", updatedUser); // Debugging log
+
     try {
       const response = await fetch("http://127.0.0.1:3000/api/user/updatedata", {
         method: "PUT",
@@ -81,16 +82,15 @@ const ProfileForm = ({ accesstoken, currentUserData , drop , setDropbox }) => {
         },
         body: JSON.stringify(updatedUser),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        {drop && handleclose()}
-        {!drop && toast.success("User updated successfully", { variant: "success" });}
-        {drop && toast.success("Profile updated successfully", { variant: "success" });}
+        { drop && handleclose() }
+        { !drop && toast.success("Profile Updated successfully", { variant: "success" }); }
+        { drop && toast.success("User updated successfully", { variant: "success" }); }
       } else {
-       
-        {!drop &&  toast.error("Failed to update User Data", { variant: "error" });}
-        {drop &&  toast.error("Failed to update Profile Data", { variant: "error" })};
+        { !drop && toast.error("Failed to update Profile Data", { variant: "error" }); }
+        { drop && toast.error("Failed to update User Data", { variant: "error" }) };
       }
     } catch (error) {
       console.log(error);

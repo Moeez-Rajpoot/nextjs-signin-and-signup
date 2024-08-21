@@ -112,6 +112,7 @@ function SignupForm() {
       setIsLoading(false);
 
       notify();
+      Router.push("/login");
     } catch (error) {
       setIsLoading(false);
       console.error("Error:", error);
