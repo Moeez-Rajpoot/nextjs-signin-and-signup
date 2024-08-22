@@ -78,7 +78,7 @@ function LoginForm() {
 
   return (
     <>
-      <form onSubmit={handleLogin} className="flex flex-col mt-5 w-full px-5 lg:px-32">
+      <form onSubmit={handleLogin} className="flex flex-col mt-52 w-full px-5 lg:px-32">
         <input
           type="email"
           onChange={(e) => setEmail(e.target.value)}

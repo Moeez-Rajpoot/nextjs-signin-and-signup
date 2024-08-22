@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAppSelector, useAppDispatch } from '@/lib/hook';
+import { useAppSelector } from '@/lib/hook';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faCircleCheck, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { toast, ToastContainer } from 'react-toastify';
@@ -10,7 +10,6 @@ import Navbar from '@/components/navbar';
 import ProfileForm from '@/app/(User)/dashboard/users/form';
 
 export default function Users() {
-  const dispatch = useAppDispatch();
   const [currentUser, setCurrentUser] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [usersData, setUsersData] = useState([]);
@@ -65,6 +64,7 @@ export default function Users() {
         });
         const data = await response.json();
         setCurrentUser(data);
+        localStorage.setItem("CurrenUserdbdata", JSON.stringify(data));
         localStorage.setItem("Userdp", JSON.stringify("https://salmon-tremendous-pike-190.mypinata.cloud/ipfs/"+data.IPFSUrl));
     
       } catch (error) {
@@ -72,10 +72,11 @@ export default function Users() {
       }
     };
     getCurrentUser();
-  }, [accessToken, dispatch]);
+  }, [accessToken ]);
 
   const handleEdit = (user) => {
     setEditUserData(user);
+    console.log("user", user);
     setDropbox(true);
   };
 

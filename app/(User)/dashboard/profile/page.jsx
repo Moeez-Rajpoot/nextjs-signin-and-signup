@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Navbar from "../../../../components/navbar";
 import ProfileForm from "../users/form";
 import { useAppSelector } from "@/lib/hook";
+import { stringify } from "postcss";
 
 const Profile = () => {
   const router = useRouter();
@@ -14,6 +15,14 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const accessToken = useAppSelector((state) => state.UserData.userData);
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
+  const [dropbox, setDropbox] = useState(true);
+
+  const stateupdate = (data) => {
+    console.log("Data:", data);
+    console.log("state updated")
+    setDropbox(data);
+
+  }
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -26,27 +35,15 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    const getCurrentUser = async () => {
-      try {
-
-        const response = await fetch("http://127.0.0.1:3000/api/user/current", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        const data = await response.json();
-        console.log("Current user  : ", data);
-        setCurrentUserData(data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (accessToken) {
-      getCurrentUser();
+   
+    const data = localStorage.getItem("CurrenUserdbdata");
+    if (data) {
+      const parsedData = JSON.parse(data);
+      console.log("Current User Data After Refreshed and parsed:", parsedData);
+      setCurrentUserData(parsedData);
     }
-  }, [accessToken, currentUser]);
+    setIsLoading(false);
+  }, [dropbox]);
 
   return (
     <>
@@ -79,7 +76,7 @@ const Profile = () => {
             </div>
           ) : (
             currentUserData && (
-              <ProfileForm accesstoken={accessToken} drop={false} currentUserData={currentUserData} />
+              <ProfileForm accesstoken={accessToken} box={stateupdate} drop={false} currentUserData={currentUserData} />
             )
           )}
         </div>

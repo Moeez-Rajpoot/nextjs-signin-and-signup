@@ -1,55 +1,57 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { validateCnic, validateEmail, validatePhone, validateUsername } from "@/helper/validationfunctions";
 
-const ProfileForm = ({ accesstoken, currentUserData, drop, setDropbox }) => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [cnic, setCnic] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [gender, setGender] = useState("Male");
+const ProfileForm = ({ accesstoken, currentUserData, drop, box, setDropbox }) => {
+  const [userDetails, setUserDetails] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    cnic: "",
+    dateOfBirth: "",
+    gender: "Male",
+  });
 
   useEffect(() => {
     if (currentUserData) {
-      setUsername(currentUserData.Username || "");
-      setEmail(currentUserData.Email || "");
-      setPhone(currentUserData.Phone || "");
-      setCnic(currentUserData.Cnic || "");
-      setDateOfBirth(currentUserData.Dob ? currentUserData.Dob.split("T")[0] : "");
-      setGender(currentUserData.Gender || "Male");
+      console.log("Current User Data:", currentUserData);
+      const formattedDate = currentUserData.Dob ? new Date(currentUserData.Dob).toISOString().split('T')[0] : "";
+      setUserDetails({
+        ...userDetails,
+        username: currentUserData.Username || "",
+        email: currentUserData.Email || "",
+        phone: currentUserData.Phone || "",
+        cnic: currentUserData.Cnic || "",
+        dateOfBirth: formattedDate,
+        gender: currentUserData.Gender || "Male"
+      });
     }
   }, [currentUserData]);
 
   const validateFields = () => {
     let isValid = true;
 
-    if (username.trim().length === 0) {
-      toast.error("Username cannot be empty.");
-      isValid = false;
-    } else if (!isNaN(username.trim())) {
-      toast.error("Username cannot be a number.");
+    if (validateUsername(userDetails.username)) {
+      toast.error("Invalid Username", { variant: "error" });
       isValid = false;
     }
-
-    let phoneRegex = /^\923\d{9}$/;
-    if (phone.length === 0) {
-      toast.error("Phone number cannot be empty.");
-      isValid = false;
-    } else if (!phoneRegex.test(phone)) {
-      toast.error("Phone number must be a valid Pakistani number.");
+    if (validateEmail(userDetails.email)) {
+      toast.error("Invalid Email", { variant: "error" });
       isValid = false;
     }
-
-    if (cnic.length === 0) {
-      toast.error("CNIC cannot be empty.");
-      isValid = false;
-    } else if (cnic.toString().length !== 15) {
-      toast.error("CNIC must be a valid 15-digit number.");
+    if (validatePhone(userDetails.phone)) {
+      toast.error("Invalid Phone Number", { variant: "error" });
       isValid = false;
     }
+    if (validateCnic(userDetails.cnic)) {
+      toast.error("Invalid CNIC", { variant: "error" });
+      isValid = false;
+    }
+  
 
-    // Add more validations as needed
+
+
 
     return isValid;
   };
@@ -58,18 +60,48 @@ const ProfileForm = ({ accesstoken, currentUserData, drop, setDropbox }) => {
     e.preventDefault();
 
     if (!validateFields()) {
-      return; // Prevent submission if fields are not valid
+      return;
+    }
+    if (currentUserData._id === undefined) {
+      toast.error("Failed to update User Data", { variant: "error" });
+      return
+      
     }
 
     const updatedUser = {
       id: currentUserData._id,
-      username,
-      email,
-      phone,
-      cnic,
-      dateOfBirth,
-      gender,
+      username: userDetails.username,
+      email: userDetails.email,
+      phone: userDetails.phone,
+      cnic: userDetails.cnic,
+      dateOfBirth: userDetails.dateOfBirth,
+      gender: userDetails.gender
     };
+
+    const profileuser= localStorage.getItem("CurrenUserdbdata");
+    if (profileuser) {
+      const profileUserData = JSON.parse(profileuser);
+      console.log( "This is paracdata : " ,profileUserData);
+
+      if (currentUserData._id === profileUserData._id) {
+
+        const updatedProfileUser = {
+          Username: userDetails.username,
+          Email: userDetails.email,
+          Phone: userDetails.phone,
+          Cnic: userDetails.cnic,
+          Dob: userDetails.dateOfBirth,
+          Gender: userDetails.gender,
+        };
+
+        console.log("Updated Profile is : ", updatedUser);
+        localStorage.setItem("CurrenUserdbdata", JSON.stringify(updatedProfileUser));
+        box(false);
+
+      }
+  
+
+    }
 
     console.log("Updated User Data:", updatedUser); // Debugging log
 
@@ -85,12 +117,12 @@ const ProfileForm = ({ accesstoken, currentUserData, drop, setDropbox }) => {
 
       if (response.ok) {
         const data = await response.json();
-        { drop && handleclose() }
-        { !drop && toast.success("Profile Updated successfully", { variant: "success" }); }
-        { drop && toast.success("User updated successfully", { variant: "success" }); }
+        if (drop) handleclose();
+        if (!drop) toast.success("Profile Updated successfully", { variant: "success" });
+        if (drop) toast.success("User updated successfully", { variant: "success" });
       } else {
-        { !drop && toast.error("Failed to update Profile Data", { variant: "error" }); }
-        { drop && toast.error("Failed to update User Data", { variant: "error" }) };
+        if (!drop) toast.error("Failed to update Profile Data", { variant: "error" });
+        if (drop) toast.error("Failed to update User Data", { variant: "error" });
       }
     } catch (error) {
       console.log(error);
@@ -100,33 +132,38 @@ const ProfileForm = ({ accesstoken, currentUserData, drop, setDropbox }) => {
 
   const handleclose = () => {
     setDropbox(false);
-  }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserDetails({ ...userDetails, [name]: value });
+  };
 
   return (
     <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div className="space-y-1">
         <label className="block text-sm font-medium text-gray-700">Username</label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
+        <input type="text" name="username" value={userDetails.username} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
       </div>
       <div className="space-y-1">
         <label className="block text-sm font-medium text-gray-700">Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
+        <input type="email" name="email" value={userDetails.email} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
       </div>
       <div className="space-y-1">
         <label className="block text-sm font-medium text-gray-700">Phone</label>
-        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
+        <input type="text" name="phone" value={userDetails.phone} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
       </div>
       <div className="space-y-1">
         <label className="block text-sm font-medium text-gray-700">CNIC</label>
-        <input type="number" value={cnic} onChange={(e) => setCnic(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
+        <input type="text" name="cnic" value={userDetails.cnic} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
       </div>
       <div className="space-y-1">
         <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
-        <input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
+        <input type="date" name="dateOfBirth" value={userDetails.dateOfBirth} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required />
       </div>
       <div className="space-y-1">
         <label className="block text-sm font-medium text-gray-700">Gender</label>
-        <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required>
+        <select name="gender" value={userDetails.gender} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" required>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>

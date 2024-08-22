@@ -4,235 +4,172 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-
-const validateUsername = (username) => {
-  if (username.trim().length === 0) {
-    return "Username cannot be empty.";
-  } else if (!isNaN(username.trim())) {
-    return "Username must include alphabets and cannot be only numbers.";
-  }
-  return "";
-};
-
-const validatePassword = (password) => {
-  if (password.length === 0) {
-    return "Password can't be empty.";
-  } else if (password.length <= 8) {
-    return "Password is weak";
-  }
-  return "";
-};
-
-const validatePhone = (phone) => {
-  const phoneRegex = /^\+923\d{9}$/;
-  if (phone.length === 0) {
-    return "Phone number cannot be empty.";
-  } else if (!phoneRegex.test(phone)) {
-    return "Phone number must be in the format +923xxxxxxxxx";
-  }
-  return "";
-};
-
-const validateCnic = (cnic) => {
-  if (cnic.length === 0) {
-    return "CNIC cannot be empty.";
-  } else if (cnic.length !== 15) {
-    return "CNIC must be 15 digits long.";
-  }
-  return "";
-};
+import { validateCnic, validateEmail, validatePassword, validatePhone, validateUsername } from "@/helper/validationfunctions";
 
 function SignupForm() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [cnic, setCnic] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [gender, setGender] = useState("Male");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [showError, setShowError] = useState(false);
-  const [errorno, setErrorNo] = useState("");
-  const [msgcolor, setMsgColor] = useState("1");
+  const [userDetail, setuserDetail] = useState({
+    username: "",
+    password: "",
+    email: "",
+    phone: "",
+    cnic: "",
+    dateOfBirth: "",
+    gender: "Male",
+  });
+  const [error, seterror] = useState({
+    username: false,
+    password: false,
+    email: false,
+    phone: false,
+    cnic: false,
+  });
+
+  const errorMessage = {
+    username: "Username cannot be empty or anumber or can have sign symbols.",
+    password: "Password must contain one uppercase, one lowercase, one number, one special character and must be 8 characters long.",
+    email: "Enter valid email address.",
+    phone: "Phone number must be in the format +923xxxxxxxxx.",
+    cnic: "CNIC must be in format of 34***-*******-1.",
+  }
+
+
   const [selectedFile, setSelectedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const Router = useRouter();
 
-  const notify = () => toast.success("User Registered Successfully");
+  const notify = () => toast.info("Check Your Email address for Verification!");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
-
+  
     if (!validateFields()) {
+      console.log("Validation Failed");
       setIsLoading(false);
       return;
     }
-
+  
+    console.log("Validation Passed");
+    console.log(userDetail);
+  
     const formData = new FormData();
-    formData.append("Username", username);
-    formData.append("Password", password);
-    formData.append("Email", email);
-    formData.append("Phone", phone);
-    formData.append("Cnic", cnic);
-    formData.append("Dob", dateOfBirth);
-    formData.append("Gender", gender);
-
+    formData.append("Username", userDetail.username);
+    formData.append("Password", userDetail.password);
+    formData.append("Email", userDetail.email);
+    formData.append("Phone", userDetail.phone);
+    formData.append("Cnic", userDetail.cnic);
+    formData.append("Dob", userDetail.dateOfBirth);
+    formData.append("Gender", userDetail.gender);
+  
     if (selectedFile) {
       formData.append("image", selectedFile, selectedFile.name);
     }
-
+  
     try {
       const response = await fetch("http://127.0.0.1:3000/api/user/register", {
         method: "POST",
         body: formData,
       });
 
+      console.log(response);
+  
       if (!response.ok) {
         setIsLoading(false);
         const errorData = await response.json();
         throw new Error(errorData.message || "Network response was not ok");
       }
-
+  
       const data = await response.json();
       console.log("Success:", data);
-
-      setUsername("");
-      setSelectedFile(null);
-      setPassword("");
-      setEmail("");
-      setPhone("");
-      setCnic("");
-      setDateOfBirth("");
-      setGender("");
-      setErrorMessage("");
-      setShowError(false);
-      setErrorNo("");
+      setuserDetail({
+        username: "",
+        password: "",
+        email: "",
+        phone: "",
+        cnic: "",
+        dateOfBirth: "",
+        gender: "Male",
+      });
       setSelectedFile(null);
       setIsLoading(false);
-
+  
       notify();
-      Router.push("/login");
+      setTimeout(() => {
+        Router.push("/login");
+      }, 2000);
     } catch (error) {
       setIsLoading(false);
-      console.error("Error:", error);
       toast.error(error.message);
     }
   };
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
 
   const validateFields = () => {
     let isValid = true;
-
-    let usernameError = validateUsername(username);
-    if (usernameError) {
-      setErrorMessage(usernameError);
-      setShowError(true);
-      setErrorNo(1);
+    
+    if(error.username){
       isValid = false;
+      toast.error(errorMessage.username);
+      return isValid;
     }
-
-    let passwordError = validatePassword(password);
-    if (passwordError) {
-      setErrorMessage(passwordError);
-      setShowError(true);
-      setMsgColor(1);
-      setErrorNo(2);
+    if(error.password){
       isValid = false;
+      toast.error(errorMessage.password);
+      return isValid;
     }
-
-    let phoneError = validatePhone(phone);
-    if (phoneError) {
-      setErrorMessage(phoneError);
-      setShowError(true);
-      setErrorNo(3);
+    if(error.email){
       isValid = false;
+      toast.error(errorMessage.email);
+      return isValid;
     }
-
-    let cnicError = validateCnic(cnic);
-    if (cnicError) {
-      setErrorMessage(cnicError);
-      setShowError(true);
-      setErrorNo(4);
+    if(error.phone){
       isValid = false;
+      toast.error(errorMessage.phone);
+      return isValid;
     }
-
+    if(error.cnic){
+      isValid = false;
+      toast.error(errorMessage.cnic);
+      return isValid;
+    }
     return isValid;
   };
 
-  const handleUsernameCheck = (e) => {
-    setErrorNo(1);
-    setUsername(e.target.value.trim());
-    const newUsername = e.target.value.trim();
-    let usernameError = validateUsername(newUsername);
-    if (usernameError) {
-      setErrorMessage(usernameError);
-      setShowError(true);
-      return;
-    } else {
-      setShowError(false);
-    }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setuserDetail({ ...userDetail, [name]: value });
+    handleError({ name, value });
   };
 
-  const handlePasswordCheck = (e) => {
-    setErrorNo(2);
-    setMsgColor(1);
-    setPassword(e.target.value);
-    const newpassword = e.target.value;
-    let passwordError = validatePassword(newpassword);
-    if (passwordError) {
-      setShowError(true);
-      setErrorMessage(passwordError);
-      return;
-    } else {
-      setShowError(false);
+  const handleError = ({ name, value }) => {
+    const clone = { ...error };
+
+    switch (name) {
+      case "username":
+        clone.username = validateUsername(value);
+        break;
+      case "password":
+        clone.password = validatePassword(value);
+        break;
+      case "cnic":
+        clone.cnic = validateCnic(value);
+        break;
+      case "email":
+        clone.email = validateEmail(value);
+        break;
+      case "phone":
+        clone.phone = validatePhone(value);
+        break;
+      default:
+        break;
     }
-    if (newpassword.length > 8 && newpassword.length <= 12) {
-      setShowError(true);
-      setMsgColor(2);
-      setErrorMessage("Password is moderate");
-    } else {
-      setShowError(true);
-      setMsgColor(3);
-      setErrorMessage("Password is strong");
-    }
+    seterror(clone);
   };
 
-  const handlePhoneCheck = (e) => {
-    setErrorNo(3);
-    setPhone(e.target.value);
-    const newphone = e.target.value;
-    let phoneError = validatePhone(newphone);
-    if (phoneError) {
-      setShowError(true);
-      setErrorMessage(phoneError);
-      return;
-    } else {
-      setShowError(false);
-    }
-  };
-
-  const handleCnicCheck = (e) => {
-    setCnic(e.target.value);
-    const newcnic = e.target.value;
-    setErrorNo(4);
-    let cnicError = validateCnic(newcnic);
-    if (cnicError) {
-      setErrorMessage(cnicError);
-      setShowError(true);
-      return;
-    } else {
-      setShowError(false);
-    }
-  };
-
-  const handleGenderChange = (event) => {
-    setGender(event.target.value);
-    console.log(event.target.value);
-  };
+  console.log(userDetail);
+  console.log(error);
 
   return (
     <form
@@ -242,17 +179,18 @@ function SignupForm() {
       <div className="flex w-full">
         <input
           type="file"
-          onChange={handleFileChange}
+          onChange={(e) => setSelectedFile(e.target.files[0])}
           className="outline-none p-3 w-full bg-transparent border-b-2 border-white text-white"
           accept="image/*"
+          required
         />
         {selectedFile && (
           <div className="mt-2">
             <Image
               src={URL.createObjectURL(selectedFile)}
               alt="Selected Preview"
-              width={50} // Specify the width
-              height={50} // Specify the height
+              width={50}
+              height={50}
               className="object-cover rounded-full"
             />
           </div>
@@ -261,84 +199,86 @@ function SignupForm() {
       <input
         type="text"
         placeholder="Full Name"
+        name="username"
         className="outline-none p-3 bg-transparent border-b-2 border-white text-white"
-        value={username}
-        onChange={handleUsernameCheck}
+        value={userDetail.username}
+        onChange={handleInputChange}
         required
       />
-      {showError && errorno === 1 && (
-        <p className="text-red-500 text-xs mt-2">{errorMessage}</p>
+      {error.username && (
+        <p className="text-red-500 text-xs mt-2">{errorMessage.username}</p>
       )}
 
       <input
         type="email"
+        name="email"
         placeholder="Email"
         className="outline-none p-3 bg-transparent border-b-2 border-white text-white mt-3"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        value={userDetail.email}
+        onChange={handleInputChange}
         required
       />
+       {error.email && (
+        <p className="text-red-500 text-xs mt-2">{errorMessage.email}</p>
+      )}
+     
 
       <input
         type="tel"
         placeholder="Phone Number"
+        name="phone"
         className="outline-none p-3 bg-transparent border-b-2 border-white text-white mt-3"
-        value={phone}
-        onChange={handlePhoneCheck}
+        value={userDetail.phone}
+        onChange={handleInputChange}
         required
       />
-      {showError && errorno === 3 && (
-        <p className="text-red-500 text-xs mt-2">{errorMessage}</p>
+      {error.phone && (
+        <p className="text-red-500 text-xs mt-2">{errorMessage.phone}</p>
       )}
 
       <input
         type="text"
+        name="cnic"
         placeholder="CNIC"
         className="outline-none p-3 bg-transparent border-b-2 border-white text-white mt-3"
-        value={cnic}
-        onChange={handleCnicCheck}
+        value={userDetail.cnic}
+        onChange={handleInputChange}
         required
       />
-      {showError && errorno === 4 && (
-        <p className="text-red-500 text-xs mt-2">{errorMessage}</p>
+      {error.cnic && (
+        <p className="text-red-500 text-xs mt-2">{errorMessage.cnic}</p>
       )}
 
       <input
         type="password"
+        name="password"
         placeholder="Password"
         className="outline-none p-3 bg-transparent border-b-2 border-white text-white mt-3"
-        value={password}
-        onChange={handlePasswordCheck}
+        value={userDetail.password}
+        onChange={handleInputChange}
         required
       />
-      {showError && errorno === 2 && (
-        <p
-          className={`text-xs mt-2 ${
-            msgcolor === 1
-              ? "text-red-500"
-              : msgcolor === 2
-              ? "text-orange-500"
-              : "text-green-500"
-          }`}
-        >
-          {errorMessage}
-        </p>
+      {error.password && (
+        <p className="text-red-500 text-xs mt-2">{errorMessage.password}</p>
       )}
+
 
       <input
         type="date"
+        name="dateOfBirth"
         placeholder="Date of Birth"
         className="outline-none p-3 bg-transparent border-b-2 border-white text-slate-400 mt-3"
-        value={dateOfBirth}
-        onChange={(e) => setDateOfBirth(e.target.value)}
+        value={userDetail.dateOfBirth}
+        onChange={handleInputChange}
         required
       />
 
       <div className="relative mt-3">
         <select
           className="appearance-none outline-none p-3 bg-transparent border-b-2 border-white text-white w-full"
-          value={gender}
-          onChange={handleGenderChange}
+          name="gender"
+          value={userDetail.gender}
+          onChange={handleInputChange}
           required
           aria-label="Select your gender"
         >

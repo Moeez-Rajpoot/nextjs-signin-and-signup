@@ -6,7 +6,7 @@ import Form from "./form";
 
 export default function SignUp() {
   return (
-    <div>
+    <div className="lg:min-h-[100vh] lg:h-fit">
       <PageLayout actiontext="Already Have an Account ?"  Actionbutton={ActionBtn} img={RegImage} text="Please Sign In to Explore the World Beyond the screen"
       swapSides={true}
       Heading="Sign Up"
