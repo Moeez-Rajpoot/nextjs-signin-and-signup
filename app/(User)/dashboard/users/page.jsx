@@ -57,7 +57,7 @@ export default function Users() {
     const getCurrentUser = async () => {
       console.log("accessToken", accessToken);
       try {
-        const response = await fetch("http://127.0.0.1:3000/api/user/current", {
+        const response = await fetch("https://node-js-login-signup.vercel.app/api/user/current", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -89,7 +89,7 @@ export default function Users() {
     }
     try {
       console.log("user is being deleted", user);
-      const response = await fetch("http://127.0.0.1:3000/api/user/delete-user", {
+      const response = await fetch("https://node-js-login-signup.vercel.app/api/user/delete-user", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

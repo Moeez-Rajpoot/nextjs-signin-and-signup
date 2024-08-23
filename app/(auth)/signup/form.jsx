@@ -52,25 +52,36 @@ function SignupForm() {
     console.log("Validation Passed");
     console.log(userDetail);
   
-    const formData = new FormData();
-    formData.append("Username", userDetail.username);
-    formData.append("Password", userDetail.password);
-    formData.append("Email", userDetail.email);
-    formData.append("Phone", userDetail.phone);
-    formData.append("Cnic", userDetail.cnic);
-    formData.append("Dob", userDetail.dateOfBirth);
-    formData.append("Gender", userDetail.gender);
-  
+    let base64Image = null;
     if (selectedFile) {
-      formData.append("image", selectedFile, selectedFile.name);
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      base64Image = await new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+      });
     }
   
+    const requestBody = {
+      Username: userDetail.username,
+      Password: userDetail.password,
+      Email: userDetail.email,
+      Phone: userDetail.phone,
+      Cnic: userDetail.cnic,
+      Dob: userDetail.dateOfBirth,
+      Gender: userDetail.gender,
+      Image: base64Image,
+    };
+  
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/user/register", {
+      const response = await fetch("https://node-js-login-signup.vercel.app/api/user/register", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
       });
-
+  
       console.log(response);
   
       if (!response.ok) {

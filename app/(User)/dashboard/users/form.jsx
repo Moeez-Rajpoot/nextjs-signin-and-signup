@@ -106,7 +106,7 @@ const ProfileForm = ({ accesstoken, currentUserData, drop, box, setDropbox }) =>
     console.log("Updated User Data:", updatedUser); // Debugging log
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/user/updatedata", {
+      const response = await fetch("https://node-js-login-signup.vercel.app/api/user/updatedata", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
