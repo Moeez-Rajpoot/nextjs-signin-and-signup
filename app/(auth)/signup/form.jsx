@@ -74,7 +74,7 @@ function SignupForm() {
     };
   
     try {
-      const response = await fetch("https://node-js-login-signup.vercel.app/api/user/register", {
+      const response = await fetch("https://nodejs-login-signup.vercel.app/api/user/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

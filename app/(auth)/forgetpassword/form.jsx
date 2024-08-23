@@ -14,7 +14,7 @@ function ForgetPasswordForm() {
 
     try {
       const response = await fetch(
-        "https://node-js-login-signup.vercel.app/api/user/reset-password",
+        "https://nodejs-login-signup.vercel.app/reset-password",
         {
           method: "POST",
           headers: {
